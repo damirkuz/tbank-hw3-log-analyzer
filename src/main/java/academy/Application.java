@@ -1,6 +1,9 @@
 package academy;
 
+import academy.log_analyzer.exception.DirectoryNotWritableException;
 import academy.log_analyzer.exception.InvalidFileFormatException;
+import academy.log_analyzer.exception.handler.CommandLineExceptionHandler;
+import academy.log_analyzer.exception.handler.ExitCodeMapper;
 import academy.log_analyzer.service.LogAnalyzerService;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -32,7 +35,10 @@ public class Application implements Runnable {
         debugArgs(Arrays.asList(args));
 
         // Запуск программы
-        int exitCode = new CommandLine(new Application()).execute(args);
+        CommandLine cmd = new CommandLine(new Application());
+        cmd.setParameterExceptionHandler(new CommandLineExceptionHandler());
+        cmd.setExitCodeExceptionMapper(new ExitCodeMapper());
+        int exitCode = cmd.execute(args);
         System.exit(exitCode);
     }
 
@@ -115,10 +121,11 @@ public class Application implements Runnable {
         LogAnalyzerService service = new LogAnalyzerService();
         try {
             service.analyze(path, format, output, from, to);
-        } catch (InvalidFileFormatException e) {
-            throw new RuntimeException(e);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+        } catch (InvalidFileFormatException | DirectoryNotWritableException | IOException e) {
+            throw new IllegalArgumentException(e.getMessage(), e);
+        } catch (Exception e) {
+            throw new RuntimeException(e.getMessage(), e);
         }
     }
+
 }

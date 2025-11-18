@@ -19,6 +19,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PathUtil {
+
+    private final InputValidator inputValidator = new InputValidator();
+
+
     public List<Path> getAllPaths(String path) throws IOException, InvalidFileFormatException {
         List<Path> result = new ArrayList<>();
 
@@ -33,7 +37,7 @@ public class PathUtil {
             Path p = Paths.get(path);
             if (Files.exists(p)) {
                 // обычный файл
-                InputValidator.validatePathSuffix(path);
+                inputValidator.validatePathSuffix(path);
                 result.add(p.toAbsolutePath().normalize());
 
             } else {
