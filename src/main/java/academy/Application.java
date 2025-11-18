@@ -1,10 +1,14 @@
 package academy;
 
+import academy.log_analyzer.exception.InvalidFileFormatException;
+import academy.log_analyzer.service.LogAnalyzerService;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -12,8 +16,13 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
+import picocli.CommandLine.Option;
 
-@Command(name = "Application Example", version = "Example 1.0", mixinStandardHelpOptions = true)
+@Command(
+        name = "log-analyzer",
+        version = "1.0",
+        description = "Log-analyzer CLI application.",
+        mixinStandardHelpOptions = true)
 public class Application implements Runnable {
 
     private static final String UNDEFINED_PARAMETER = "undefined";
@@ -25,11 +34,6 @@ public class Application implements Runnable {
         // Запуск программы
         int exitCode = new CommandLine(new Application()).execute(args);
         System.exit(exitCode);
-    }
-
-    @Override
-    public void run() {
-        // реализуйте логику по парсингу лог-файлов :)
     }
 
     // Note: нужно только для отладки, удалить в случае ненадобности
@@ -76,5 +80,45 @@ public class Application implements Runnable {
                                 ? "glob: " + it
                                 : "path: %s, exists: %s".formatted(it, Files.exists(Path.of(it))))
                         .collect(Collectors.joining(";")));
+    }
+
+    @Option(
+            names = {"--path", "-p"},
+            required = true,
+            description = "путь к одному или нескольким NGINX лог-файлам")
+    String path;
+
+    @Option(
+            names = {"--format", "-f"},
+            required = true,
+            description = "формат вывода результатов: json, markdown, adoc")
+    String format;
+
+    @Option(
+            names = {"--output", "-o"},
+            required = true,
+            description = "путь до файла, куда должен быть сохранён результат работы программы")
+    String output;
+
+    @Option(
+            names = {"--from"},
+            description = "стартовая точка времени в формате ISO8601")
+    Date from;
+
+    @Option(
+            names = {"--to"},
+            description = "конечная точка времени в формате ISO8601")
+    Date to;
+
+    @Override
+    public void run() {
+        LogAnalyzerService service = new LogAnalyzerService();
+        try {
+            service.analyze(path, format, output, from, to);
+        } catch (InvalidFileFormatException e) {
+            throw new RuntimeException(e);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
