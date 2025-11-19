@@ -2,27 +2,30 @@ package academy.log_analyzer.service;
 
 import academy.log_analyzer.exception.DirectoryNotWritableException;
 import academy.log_analyzer.exception.InvalidFileFormatException;
+import academy.log_analyzer.exception.InvalidFormatFlagException;
 import academy.log_analyzer.format.FormatType;
 import academy.log_analyzer.util.PathUtil;
 import academy.log_analyzer.validation.InputValidator;
+import java.io.BufferedReader;
 import java.io.IOException;
-import java.nio.file.Path;
 import java.util.Date;
 import java.util.List;
 
 public class LogAnalyzerService {
-    public void analyze(String path, String format, String output, Date from, Date to)
-        throws InvalidFileFormatException, IOException, DirectoryNotWritableException {
 
-        InputValidator inputValidator = new InputValidator();
+    private final static InputValidator inputValidator = new InputValidator();
+    private final static PathUtil pathUtil = new PathUtil();
 
-        PathUtil pathUtil = new PathUtil();
-        List<Path> paths = pathUtil.getAllPaths(path);
+    public void analyze(List<String> paths, String format, String output, Date from, Date to)
+        throws InvalidFileFormatException, IOException, DirectoryNotWritableException, InvalidFormatFlagException {
 
-        FormatType formatType = FormatType.valueOf(format);
+        FormatType formatType = FormatType.fromValue(format);
 
         inputValidator.validateOutputFlag(output, formatType);
 
+        List<BufferedReader> readerList = pathUtil.getAllBufferedReadersFromPaths(paths);
+
 
     }
+
 }

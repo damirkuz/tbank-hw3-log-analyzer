@@ -1,7 +1,6 @@
 package academy.log_analyzer.format;
 
 import academy.log_analyzer.exception.InvalidFormatFlagException;
-import com.fasterxml.jackson.databind.util.JSONPObject;
 
 public enum FormatType {
     JSON ("json"),
@@ -18,7 +17,7 @@ public enum FormatType {
         return value;
     }
 
-    public FormatType fromValue(String s) throws InvalidFormatFlagException {
+    public static FormatType fromValue(String s) throws InvalidFormatFlagException {
         for (FormatType formatType: FormatType.values()) {
             if (formatType.getValue().equalsIgnoreCase(s)) {
                 return formatType;

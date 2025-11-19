@@ -91,8 +91,9 @@ public class Application implements Runnable {
     @Option(
             names = {"--path", "-p"},
             required = true,
+            arity = "1..*",
             description = "путь к одному или нескольким NGINX лог-файлам")
-    String path;
+    List<String> paths;
 
     @Option(
             names = {"--format", "-f"},
@@ -120,7 +121,7 @@ public class Application implements Runnable {
     public void run() {
         LogAnalyzerService service = new LogAnalyzerService();
         try {
-            service.analyze(path, format, output, from, to);
+            service.analyze(paths, format, output, from, to);
         } catch (InvalidFileFormatException | DirectoryNotWritableException | IOException e) {
             throw new IllegalArgumentException(e.getMessage(), e);
         } catch (Exception e) {
