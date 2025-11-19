@@ -5,6 +5,8 @@ import academy.log_analyzer.exception.InvalidFileFormatException;
 import academy.log_analyzer.exception.InvalidFormatFlagException;
 import academy.log_analyzer.format.FormatType;
 import academy.log_analyzer.util.PathUtil;
+import academy.log_analyzer.util.TimeRangeMode;
+import academy.log_analyzer.util.TimeRangeUtil;
 import academy.log_analyzer.validation.InputValidator;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -22,6 +24,9 @@ public class LogAnalyzerService {
         FormatType formatType = FormatType.fromValue(format);
 
         inputValidator.validateOutputFlag(output, formatType);
+        inputValidator.validateFromAndTo(from, to);
+
+        TimeRangeMode timeRangeMode = TimeRangeUtil.getTimeRangeMode(from, to);
 
         List<BufferedReader> readerList = pathUtil.getAllBufferedReadersFromPaths(paths);
 

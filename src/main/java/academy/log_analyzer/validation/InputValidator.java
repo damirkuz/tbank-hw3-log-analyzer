@@ -14,6 +14,7 @@ import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Date;
 
 public class InputValidator {
     public void validatePathSuffix(String path) throws InvalidFileFormatException {
@@ -95,6 +96,11 @@ public class InputValidator {
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
+    }
 
+    public void validateFromAndTo(Date from, Date to) {
+        if (from != null && to != null && from.after(to)) {
+            throw new IllegalArgumentException("Дата флага from больше to");
+        }
     }
 }
