@@ -1,13 +1,17 @@
 package academy.log_analyzer.service;
 
+import academy.log_analyzer.entity.AnalyzedFile;
 import academy.log_analyzer.entity.LogEntry;
 import academy.log_analyzer.entity.StatisticsReport;
+import academy.log_analyzer.util.RoundUtil;
 import com.tdunning.math.stats.MergingDigest;
 import com.tdunning.math.stats.TDigest;
 import java.text.DecimalFormat;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -61,22 +65,26 @@ public class LogStatisticsCollector {
     }
 
     private double getAverageResponseSize() {
-        return roundTo2digitsAfterDot((double) sumResponseSize / countNotNullResponseSizeRequests);
+        return RoundUtil.roundTo2digitsAfterDot((double) sumResponseSize / countNotNullResponseSizeRequests);
     }
 
     private double getP95() {
-        return roundTo2digitsAfterDot(tDigest.quantile(0.95));
+        return RoundUtil.roundTo2digitsAfterDot(tDigest.quantile(0.95));
     }
 
 
-    private double roundTo2digitsAfterDot(double number) {
-        return Math.round(number * 100.0) / 100.0;
-    }
-
-
-    public StatisticsReport getReport() {
+    public StatisticsReport getReport(List<AnalyzedFile> analyzedFiles) {
         return new StatisticsReport(
-            allRequestsCount, getAverageResponseSize(), maxResponseSizeRequest, getP95(), statusCodesStatistics, requestedPaths, requestsInDate, uniqueProtocols
+            getAnalyzedFilesNames(analyzedFiles), allRequestsCount, getAverageResponseSize(), maxResponseSizeRequest, getP95(), statusCodesStatistics, requestedPaths, requestsInDate, uniqueProtocols
         );
+    }
+
+    private List<String> getAnalyzedFilesNames(List<AnalyzedFile> analyzedFiles) {
+        List<String> analyzedFilesNames = new ArrayList<>();
+
+        for (AnalyzedFile analyzedFile: analyzedFiles) {
+            analyzedFilesNames.add(analyzedFile.fileName());
+        }
+        return analyzedFilesNames;
     }
 }

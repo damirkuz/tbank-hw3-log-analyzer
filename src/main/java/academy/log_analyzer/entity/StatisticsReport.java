@@ -6,7 +6,7 @@ import java.util.Map;
 import java.util.Set;
 
 public record StatisticsReport(
-    List<String> analyzedFiles,
+    List<String> analyzedFilesNames,
     long allRequestsCount,
     double averageResponseSize,
     long maxResponseSizeRequest,

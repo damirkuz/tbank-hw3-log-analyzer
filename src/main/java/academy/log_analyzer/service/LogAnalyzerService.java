@@ -1,13 +1,16 @@
 package academy.log_analyzer.service;
 
+import academy.log_analyzer.entity.AnalyzedFile;
 import academy.log_analyzer.entity.LogEntry;
 import academy.log_analyzer.entity.StatisticsReport;
 import academy.log_analyzer.exception.DirectoryNotWritableException;
 import academy.log_analyzer.exception.InvalidFileFormatException;
 import academy.log_analyzer.exception.InvalidFormatFlagException;
+import academy.log_analyzer.format.AdocFormatter;
 import academy.log_analyzer.format.FormatType;
 import academy.log_analyzer.format.Formatter;
 import academy.log_analyzer.format.JsonFormatter;
+import academy.log_analyzer.format.MarkdownFormatter;
 import academy.log_analyzer.util.FileWriterUtil;
 import academy.log_analyzer.util.ParseUtil;
 import academy.log_analyzer.util.PathUtil;
@@ -38,7 +41,7 @@ public class LogAnalyzerService {
 
         TimeRangeUtil timeRangeUtil = new TimeRangeUtil(from, to);
 
-        List<BufferedReader> readerList = pathUtil.getAllBufferedReadersFromPaths(paths);
+        List<AnalyzedFile> readerList = pathUtil.getAllBufferedReadersFromPaths(paths);
 
         StatisticsReport statisticsReport = analyzeLogs(readerList, formatType, timeRangeUtil, output);
 
@@ -46,16 +49,19 @@ public class LogAnalyzerService {
 
         String reportInString = formatter.format(statisticsReport);
 
+        System.out.println(reportInString);
+
         FileWriterUtil.writeFile(reportInString, output);
     }
 
-    private StatisticsReport analyzeLogs(List<BufferedReader> logReaders, FormatType formatType, TimeRangeUtil timeRangeUtil, String output) {
+    private StatisticsReport analyzeLogs(List<AnalyzedFile> analyzedFiles, FormatType formatType, TimeRangeUtil timeRangeUtil, String output) {
         LogStatisticsCollector statisticsCollector = new LogStatisticsCollector();
         ParseUtil parseUtil = new ParseUtil();
 
-        for (BufferedReader reader: logReaders) {
-            try {
+        for (AnalyzedFile analyzedFile: analyzedFiles) {
+            try (BufferedReader reader = analyzedFile.reader()) {
                 String logString;
+
                 while ((logString = reader.readLine()) != null) {
                     LogEntry logEntry = parseUtil.parseNginxLog(logString);
 
@@ -72,12 +78,14 @@ public class LogAnalyzerService {
             }
         }
 
-        return statisticsCollector.getReport();
+        return statisticsCollector.getReport(analyzedFiles);
     }
 
     private Formatter getFormatter(FormatType formatType) {
         return switch (formatType) {
             case JSON -> new JsonFormatter();
+            case MARKDOWN -> new MarkdownFormatter();
+            case ADOC -> new AdocFormatter();
             default -> new JsonFormatter();
         };
     }
