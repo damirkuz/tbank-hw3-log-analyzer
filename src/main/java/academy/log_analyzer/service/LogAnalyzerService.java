@@ -14,16 +14,14 @@ import academy.log_analyzer.format.MarkdownFormatter;
 import academy.log_analyzer.util.FileWriterUtil;
 import academy.log_analyzer.util.ParseUtil;
 import academy.log_analyzer.util.PathUtil;
-import academy.log_analyzer.util.TimeRangeMode;
 import academy.log_analyzer.util.TimeRangeUtil;
 import academy.log_analyzer.validation.InputValidator;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class LogAnalyzerService {
 
@@ -43,22 +41,20 @@ public class LogAnalyzerService {
 
         List<AnalyzedFile> readerList = pathUtil.getAllBufferedReadersFromPaths(paths);
 
-        StatisticsReport statisticsReport = analyzeLogs(readerList, formatType, timeRangeUtil, output);
+        StatisticsReport statisticsReport = analyzeLogs(readerList, timeRangeUtil);
 
         Formatter formatter = getFormatter(formatType);
 
         String reportInString = formatter.format(statisticsReport);
 
-        System.out.println(reportInString);
-
         FileWriterUtil.writeFile(reportInString, output);
     }
 
-    private StatisticsReport analyzeLogs(List<AnalyzedFile> analyzedFiles, FormatType formatType, TimeRangeUtil timeRangeUtil, String output) {
+    private StatisticsReport analyzeLogs(List<AnalyzedFile> analyzedFiles, TimeRangeUtil timeRangeUtil) {
         LogStatisticsCollector statisticsCollector = new LogStatisticsCollector();
         ParseUtil parseUtil = new ParseUtil();
 
-        for (AnalyzedFile analyzedFile: analyzedFiles) {
+        for (AnalyzedFile analyzedFile : analyzedFiles) {
             try (BufferedReader reader = analyzedFile.reader()) {
                 String logString;
 
@@ -78,7 +74,7 @@ public class LogAnalyzerService {
             }
         }
 
-        return statisticsCollector.getReport(analyzedFiles);
+        return statisticsCollector.getReport(analyzedFiles, timeRangeUtil.getLocalDateTimeFrom(), timeRangeUtil.getLocalDateTimeTo());
     }
 
     private Formatter getFormatter(FormatType formatType) {

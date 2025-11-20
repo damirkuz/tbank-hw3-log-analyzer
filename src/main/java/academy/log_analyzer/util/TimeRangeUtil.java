@@ -9,11 +9,15 @@ public class TimeRangeUtil {
 
     private final OffsetDateTime from;
     private final OffsetDateTime to;
+    private final LocalDateTime localDateTimeFrom;
+    private final LocalDateTime localDateTimeTo;
     private final TimeRangeMode timeRangeMode;
 
     public TimeRangeUtil(LocalDateTime from, LocalDateTime to) {
         this.from = toOffsetDateTime(from);
         this.to = toOffsetDateTime(to);
+        this.localDateTimeFrom = from;
+        this.localDateTimeTo = to;
         this.timeRangeMode = getTimeRangeMode(from, to);
     }
 
@@ -43,5 +47,13 @@ public class TimeRangeUtil {
         } else {
             return TimeRangeMode.ALL_BETWEEN_FROM_AND_TO;
         }
+    }
+
+    public LocalDateTime getLocalDateTimeFrom() {
+        return localDateTimeFrom;
+    }
+
+    public LocalDateTime getLocalDateTimeTo() {
+        return localDateTimeTo;
     }
 }

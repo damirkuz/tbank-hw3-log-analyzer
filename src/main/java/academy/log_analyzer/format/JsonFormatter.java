@@ -19,9 +19,6 @@ public class JsonFormatter extends AbstractFormatter {
         .enable(SerializationFeature.INDENT_OUTPUT);
 
 
-    private static final DateTimeFormatter formatterToSimpleDate =
-        DateTimeFormatter.ofPattern("yyyy-MM-dd", Locale.ENGLISH);
-
     @Override
     public String format(StatisticsReport statisticsReport) {
         Map<String, Object> map = new LinkedHashMap<>();
@@ -69,7 +66,7 @@ public class JsonFormatter extends AbstractFormatter {
 
         for (LocalDate date : dates.keySet()) {
             Map<String, Object> linkedHashMap = new LinkedHashMap<>();
-            linkedHashMap.put("date", date.format(formatterToSimpleDate));
+            linkedHashMap.put("date", date.format(formatterToYYYYMMDD));
             linkedHashMap.put("weekday", date.getDayOfWeek().toString());
             long count = dates.get(date);
             linkedHashMap.put("totalRequestsCount", count);
