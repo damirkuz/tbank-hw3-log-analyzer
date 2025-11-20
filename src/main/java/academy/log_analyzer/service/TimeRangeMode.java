@@ -1,4 +1,4 @@
-package academy.log_analyzer.util;
+package academy.log_analyzer.service;
 
 public enum TimeRangeMode {
     ALL,

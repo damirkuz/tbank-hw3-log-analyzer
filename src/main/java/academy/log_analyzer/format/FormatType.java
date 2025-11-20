@@ -3,9 +3,9 @@ package academy.log_analyzer.format;
 import academy.log_analyzer.exception.InvalidFormatFlagException;
 
 public enum FormatType {
-    JSON ("json"),
-    MARKDOWN ("markdown"),
-    ADOC ("adoc");
+    JSON("json"),
+    MARKDOWN("markdown"),
+    ADOC("adoc");
 
     private final String value;
 
@@ -18,7 +18,7 @@ public enum FormatType {
     }
 
     public static FormatType fromValue(String s) throws InvalidFormatFlagException {
-        for (FormatType formatType: FormatType.values()) {
+        for (FormatType formatType : values()) {
             if (formatType.getValue().equalsIgnoreCase(s)) {
                 return formatType;
             }

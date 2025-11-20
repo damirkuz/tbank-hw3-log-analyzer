@@ -14,7 +14,6 @@ import academy.log_analyzer.format.MarkdownFormatter;
 import academy.log_analyzer.util.FileWriterUtil;
 import academy.log_analyzer.util.ParseUtil;
 import academy.log_analyzer.util.PathUtil;
-import academy.log_analyzer.util.TimeRangeUtil;
 import academy.log_analyzer.validation.InputValidator;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -25,23 +24,29 @@ import org.slf4j.LoggerFactory;
 
 public class LogAnalyzerService {
 
-    private final static InputValidator inputValidator = new InputValidator();
-    private final static PathUtil pathUtil = new PathUtil();
+    private static final InputValidator inputValidator = new InputValidator();
+    private static final PathUtil pathUtil = new PathUtil();
+    private static final ParseUtil parseUtil = new ParseUtil();
     private static final Logger log = LoggerFactory.getLogger(LogAnalyzerService.class);
 
-    public void runAnalysis(List<String> paths, String format, String output, LocalDateTime from, LocalDateTime to)
-        throws InvalidFileFormatException, IOException, DirectoryNotWritableException, InvalidFormatFlagException {
+    public void runAnalysis(List<String> paths, String format, String output, String stringFrom, String stringTo)
+            throws InvalidFileFormatException, IOException, DirectoryNotWritableException, InvalidFormatFlagException {
 
         FormatType formatType = FormatType.fromValue(format);
 
         inputValidator.validateOutputFlag(output, formatType);
+
+        LocalDateTime from = parseUtil.parseLocalDateTime(stringFrom);
+        LocalDateTime to = parseUtil.parseLocalDateTime(stringTo);
+
+
         inputValidator.validateFromAndTo(from, to);
 
-        TimeRangeUtil timeRangeUtil = new TimeRangeUtil(from, to);
+        TimeRangeService timeRangeService = new TimeRangeService(from, to);
 
         List<AnalyzedFile> readerList = pathUtil.getAllBufferedReadersFromPaths(paths);
 
-        StatisticsReport statisticsReport = analyzeLogs(readerList, timeRangeUtil);
+        StatisticsReport statisticsReport = analyzeLogs(readerList, timeRangeService);
 
         Formatter formatter = getFormatter(formatType);
 
@@ -50,9 +55,8 @@ public class LogAnalyzerService {
         FileWriterUtil.writeFile(reportInString, output);
     }
 
-    private StatisticsReport analyzeLogs(List<AnalyzedFile> analyzedFiles, TimeRangeUtil timeRangeUtil) {
+    private StatisticsReport analyzeLogs(List<AnalyzedFile> analyzedFiles, TimeRangeService timeRangeService) {
         LogStatisticsCollector statisticsCollector = new LogStatisticsCollector();
-        ParseUtil parseUtil = new ParseUtil();
 
         for (AnalyzedFile analyzedFile : analyzedFiles) {
             try (BufferedReader reader = analyzedFile.reader()) {
@@ -64,7 +68,7 @@ public class LogAnalyzerService {
                     if (logEntry == null) {
                         log.warn("Не удалось считать строку");
                     } else {
-                        if (timeRangeUtil.isCorrectTimeRangeForLogEntry(logEntry)) {
+                        if (timeRangeService.isCorrectTimeRangeForLogEntry(logEntry)) {
                             statisticsCollector.addLogInStatistics(logEntry);
                         }
                     }
@@ -74,7 +78,8 @@ public class LogAnalyzerService {
             }
         }
 
-        return statisticsCollector.getReport(analyzedFiles, timeRangeUtil.getLocalDateTimeFrom(), timeRangeUtil.getLocalDateTimeTo());
+        return statisticsCollector.getReport(
+                analyzedFiles, timeRangeService.getLocalDateTimeFrom(), timeRangeService.getLocalDateTimeTo());
     }
 
     private Formatter getFormatter(FormatType formatType) {
@@ -85,5 +90,4 @@ public class LogAnalyzerService {
             default -> new JsonFormatter();
         };
     }
-
 }

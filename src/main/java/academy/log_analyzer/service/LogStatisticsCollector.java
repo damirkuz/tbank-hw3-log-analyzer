@@ -15,7 +15,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-
 public class LogStatisticsCollector {
     private final Map<Integer, Long> statusCodesStatistics;
     private final Map<String, Long> requestedPaths;
@@ -53,7 +52,8 @@ public class LogStatisticsCollector {
             }
         }
 
-        statusCodesStatistics.put(logEntry.statusCode(), statusCodesStatistics.getOrDefault(logEntry.statusCode(), 0L) + 1);
+        statusCodesStatistics.put(
+                logEntry.statusCode(), statusCodesStatistics.getOrDefault(logEntry.statusCode(), 0L) + 1);
 
         requestedPaths.put(logEntry.path(), requestedPaths.getOrDefault(logEntry.path(), 0L) + 1);
 
@@ -72,21 +72,19 @@ public class LogStatisticsCollector {
         return RoundUtil.roundTo2digitsAfterDot(tDigest.quantile(0.95));
     }
 
-
     public StatisticsReport getReport(List<AnalyzedFile> analyzedFiles, LocalDateTime from, LocalDateTime to) {
         return new StatisticsReport(
-            getAnalyzedFilesNames(analyzedFiles),
-            allRequestsCount,
-            getAverageResponseSize(),
-            maxResponseSizeRequest,
-            getP95(),
-            statusCodesStatistics,
-            requestedPaths,
-            requestsInDate,
-            uniqueProtocols,
-            from,
-            to
-        );
+                getAnalyzedFilesNames(analyzedFiles),
+                allRequestsCount,
+                getAverageResponseSize(),
+                maxResponseSizeRequest,
+                getP95(),
+                statusCodesStatistics,
+                requestedPaths,
+                requestsInDate,
+                uniqueProtocols,
+                from,
+                to);
     }
 
     private List<String> getAnalyzedFilesNames(List<AnalyzedFile> analyzedFiles) {

@@ -7,15 +7,14 @@ import java.util.Map;
 import java.util.Set;
 
 public record StatisticsReport(
-    List<String> analyzedFilesNames,
-    long allRequestsCount,
-    double averageResponseSize,
-    long maxResponseSizeRequest,
-    double percentile95,
-    Map<Integer, Long> statusCodesStatistics,
-    Map<String, Long> requestedPaths,
-    Map<LocalDate, Long> requestsInDate,
-    Set<String> uniqueProtocols,
-    LocalDateTime from,
-    LocalDateTime to
-) {}
+        List<String> analyzedFilesNames,
+        long allRequestsCount,
+        double averageResponseSize,
+        long maxResponseSizeRequest,
+        double percentile95,
+        Map<Integer, Long> statusCodesStatistics,
+        Map<String, Long> requestedPaths,
+        Map<LocalDate, Long> requestsInDate,
+        Set<String> uniqueProtocols,
+        LocalDateTime from,
+        LocalDateTime to) {}

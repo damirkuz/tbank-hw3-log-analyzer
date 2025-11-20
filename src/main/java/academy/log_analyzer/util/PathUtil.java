@@ -17,7 +17,6 @@ import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.PathMatcher;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,8 +26,8 @@ public class PathUtil {
 
     private final HttpClient httpClient = HttpClient.newHttpClient();
 
-
-    public List<AnalyzedFile> getAllBufferedReadersFromPaths(List<String> paths) throws IOException, InvalidFileFormatException {
+    public List<AnalyzedFile> getAllBufferedReadersFromPaths(List<String> paths)
+            throws IOException, InvalidFileFormatException {
         List<AnalyzedFile> result = new ArrayList<>();
 
         for (String path : paths) {
@@ -43,7 +42,7 @@ public class PathUtil {
 
             } else {
                 // локальные файлы
-                Path p = Paths.get(path);
+                Path p = Path.of(path);
                 if (Files.exists(p)) {
                     // обычный файл
                     inputValidator.validatePathSuffix(path);
@@ -59,30 +58,24 @@ public class PathUtil {
             }
         }
 
-
         return result;
     }
 
     private AnalyzedFile readFileFromUrl(String uri) throws IOException, InterruptedException {
-        HttpRequest request = HttpRequest.newBuilder()
-            .uri(URI.create(uri))
-            .build();
+        HttpRequest request = HttpRequest.newBuilder().uri(URI.create(uri)).build();
 
-        HttpResponse<InputStream> response = httpClient.send(
-            request,
-            HttpResponse.BodyHandlers.ofInputStream()
-        );
+        HttpResponse<InputStream> response = httpClient.send(request, HttpResponse.BodyHandlers.ofInputStream());
         return new AnalyzedFile(uri, new BufferedReader(new InputStreamReader(response.body())));
     }
 
     private List<AnalyzedFile> expandLocalPattern(String pattern) throws IOException {
-        Path p = Paths.get(pattern);
+        Path p = Path.of(pattern);
 
         Path dir;
         String fileGlob;
 
         if (p.getParent() == null) {
-            dir = Paths.get("."); // текущая директория
+            dir = Path.of("."); // текущая директория
             fileGlob = pattern;
         } else {
             dir = p.getParent();

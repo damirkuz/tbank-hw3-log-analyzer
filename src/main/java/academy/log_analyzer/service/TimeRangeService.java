@@ -1,11 +1,11 @@
-package academy.log_analyzer.util;
+package academy.log_analyzer.service;
 
 import academy.log_analyzer.entity.LogEntry;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 
-public class TimeRangeUtil {
+public class TimeRangeService {
 
     private final OffsetDateTime from;
     private final OffsetDateTime to;
@@ -13,7 +13,7 @@ public class TimeRangeUtil {
     private final LocalDateTime localDateTimeTo;
     private final TimeRangeMode timeRangeMode;
 
-    public TimeRangeUtil(LocalDateTime from, LocalDateTime to) {
+    public TimeRangeService(LocalDateTime from, LocalDateTime to) {
         this.from = toOffsetDateTime(from);
         this.to = toOffsetDateTime(to);
         this.localDateTimeFrom = from;
@@ -33,7 +33,9 @@ public class TimeRangeUtil {
             case ALL -> true;
             case ALL_BETWEEN_MINUS_INF_AND_TO -> logEntry.offsetDateTime().isBefore(to);
             case ALL_BETWEEN_FROM_AND_INF -> logEntry.offsetDateTime().isAfter(from);
-            case ALL_BETWEEN_FROM_AND_TO -> logEntry.offsetDateTime().isAfter(from) && logEntry.offsetDateTime().isBefore(to);
+            case ALL_BETWEEN_FROM_AND_TO ->
+                logEntry.offsetDateTime().isAfter(from)
+                        && logEntry.offsetDateTime().isBefore(to);
         };
     }
 

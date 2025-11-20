@@ -33,11 +33,15 @@ public class AdocFormatter extends AbstractFormatter {
         sb.append("| Файл(-ы) | `").append(files).append("`\n");
         sb.append("| Начальная дата | ").append(fromDate).append("\n");
         sb.append("| Конечная дата | ").append(toDate).append("\n");
-        sb.append("| Количество запросов | ").append(formatNumber(r.allRequestsCount())).append("\n");
+        sb.append("| Количество запросов | ")
+                .append(formatNumber(r.allRequestsCount()))
+                .append("\n");
         sb.append("| Средний размер ответа | ")
-            .append(formatNumber(Math.round(r.averageResponseSize()))).append("b\n");
+                .append(formatNumber(Math.round(r.averageResponseSize())))
+                .append("b\n");
         sb.append("| 95p размера ответа | ")
-            .append(formatNumber(Math.round(r.percentile95()))).append("b\n");
+                .append(formatNumber(Math.round(r.percentile95())))
+                .append("b\n");
 
         sb.append("|===\n");
     }
@@ -51,9 +55,11 @@ public class AdocFormatter extends AbstractFormatter {
         sb.append("| Ресурс | Количество\n");
 
         for (Map.Entry<String, Long> entry : r.requestedPaths().entrySet()) {
-            sb.append("| ").append(entry.getKey())
-                .append(" | ").append(formatNumber(entry.getValue()))
-                .append("\n");
+            sb.append("| ")
+                    .append(entry.getKey())
+                    .append(" | ")
+                    .append(formatNumber(entry.getValue()))
+                    .append("\n");
         }
 
         sb.append("|===\n");
@@ -72,10 +78,13 @@ public class AdocFormatter extends AbstractFormatter {
             long count = entry.getValue();
             String name = getStatusName(code);
 
-            sb.append("| ").append(code)
-                .append(" | ").append(name)
-                .append(" | ").append(formatNumber(count))
-                .append("\n");
+            sb.append("| ")
+                    .append(code)
+                    .append(" | ")
+                    .append(name)
+                    .append(" | ")
+                    .append(formatNumber(count))
+                    .append("\n");
         }
 
         sb.append("|===\n");

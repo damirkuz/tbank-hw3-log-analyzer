@@ -13,9 +13,7 @@ import java.net.http.HttpResponse;
 import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.time.LocalDateTime;
-import java.util.Date;
 
 public class InputValidator {
     public void validatePathSuffix(String path) throws InvalidFileFormatException {
@@ -24,13 +22,15 @@ public class InputValidator {
         }
     }
 
-    public void validateOutputFlag(String outputFlag, FormatType formatType) throws InvalidFileFormatException, FileAlreadyExistsException, DirectoryNotWritableException {
+    public void validateOutputFlag(String outputFlag, FormatType formatType)
+            throws InvalidFileFormatException, FileAlreadyExistsException, DirectoryNotWritableException {
         if (!isSameOutputFlagAndFileFormat(outputFlag, formatType)) {
-            throw new InvalidFileFormatException("Расширение файла output " + outputFlag + " не соответствует ожидаемому");
+            throw new InvalidFileFormatException(
+                    "Расширение файла output " + outputFlag + " не соответствует ожидаемому");
         }
 
         // локальные файлы
-        Path path = Paths.get(outputFlag);
+        Path path = Path.of(outputFlag);
         if (Files.exists(path)) {
             throw new FileAlreadyExistsException("output файл уже существует");
         }
@@ -38,11 +38,12 @@ public class InputValidator {
         Path parent = path.getParent();
         if (parent == null) {
             // файл в текущей директории
-            parent = Paths.get(".");
+            parent = Path.of(".");
         }
 
         if (!Files.exists(parent) || !Files.isDirectory(parent)) {
-            throw new DirectoryNotWritableException("Директория " + parent + " не существует или не является директорией");
+            throw new DirectoryNotWritableException(
+                    "Директория " + parent + " не существует или не является директорией");
         }
 
         if (!Files.isWritable(parent)) {
@@ -62,15 +63,14 @@ public class InputValidator {
         try {
             URI uri = new URI(value);
             return uri.getScheme() != null
-                && (uri.getScheme().equalsIgnoreCase("http")
-                || uri.getScheme().equalsIgnoreCase("https"));
+                    && (uri.getScheme().equalsIgnoreCase("http")
+                            || uri.getScheme().equalsIgnoreCase("https"));
         } catch (URISyntaxException e) {
             return false;
         }
     }
 
-    public void validateRemoteUrl(String value)
-        throws IOException {
+    public void validateRemoteUrl(String value) throws IOException {
 
         if (!isCorrectUri(value)) {
             throw new IllegalArgumentException("Некорректная ссылка: " + value);
@@ -78,14 +78,11 @@ public class InputValidator {
 
         try (HttpClient httpClient = HttpClient.newHttpClient()) {
             HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(value))
-                .method("HEAD", HttpRequest.BodyPublishers.noBody())
-                .build();
+                    .uri(URI.create(value))
+                    .method("HEAD", HttpRequest.BodyPublishers.noBody())
+                    .build();
 
-            HttpResponse<Void> response = httpClient.send(
-                request,
-                HttpResponse.BodyHandlers.discarding()
-            );
+            HttpResponse<Void> response = httpClient.send(request, HttpResponse.BodyHandlers.discarding());
 
             int status = response.statusCode();
             if (status == 404) {

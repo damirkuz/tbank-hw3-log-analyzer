@@ -1,28 +1,34 @@
 package academy.log_analyzer.util;
 
 import academy.log_analyzer.entity.LogEntry;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ParseUtil {
 
     // Примеры логов
-    // '$remote_addr - $remote_user [$time_local] ' '"$request" $status $body_bytes_sent ' '"$http_referer" "$http_user_agent"'
-    //93.180.71.3 - - [17/May/2015:08:05:32 +0000] "GET /downloads/product_1 HTTP/1.1" 304 0 "-" "Debian APT-HTTP/1.3 (0.8.16~exp12ubuntu10.21)"
+    // '$remote_addr - $remote_user [$time_local] ' '"$request" $status $body_bytes_sent ' '"$http_referer"
+    // "$http_user_agent"'
+    // 93.180.71.3 - - [17/May/2015:08:05:32 +0000] "GET /downloads/product_1 HTTP/1.1" 304 0 "-" "Debian APT-HTTP/1.3
+    // (0.8.16~exp12ubuntu10.21)"
 
     private static final Logger log = LoggerFactory.getLogger(ParseUtil.class);
 
     private static final Pattern splitIntoParts = Pattern.compile("^(.+?) - (.+?) \\[(.+?)\\] \"(.+?)\"$");
-//    private static final Pattern splitIntoParts = Pattern.compile("^((\\d{1,3}\\.){3}\\d{1,3}) - (.+?) \\[(.+?)\\] \\\"(.+?)\\\"$");
-    private static final Pattern splitRequest = Pattern.compile("([A-Za-z]+?) (.+?) (.+?)\\\" (\\d+) (\\d+) \\\"(.+)\\\" \\\"(.+)");
+    //    private static final Pattern splitIntoParts = Pattern.compile("^((\\d{1,3}\\.){3}\\d{1,3}) - (.+?) \\[(.+?)\\]
+    // \\\"(.+?)\\\"$");
+    private static final Pattern splitRequest =
+            Pattern.compile("([A-Za-z]+?) (.+?) (.+?)\\\" (\\d+) (\\d+) \\\"(.+)\\\" \\\"(.+)");
 
-    private static final DateTimeFormatter NGINX_DATE_FORMATTER = DateTimeFormatter.ofPattern("dd/MMM/yyyy:HH:mm:ss Z", Locale.ENGLISH);
-
+    private static final DateTimeFormatter NGINX_DATE_FORMATTER =
+            DateTimeFormatter.ofPattern("dd/MMM/yyyy:HH:mm:ss Z", Locale.ENGLISH);
 
     public LogEntry parseNginxLog(String string) {
         Matcher matcherOnGroups = splitIntoParts.matcher(string);
@@ -51,13 +57,25 @@ public class ParseUtil {
         String referer = matcherRequest.group(6);
         String userAgent = matcherRequest.group(7);
 
-        return new LogEntry(userIP, remoteUser, dateTime, method, path, protocol, status, responseSize, referer, userAgent);
+        return new LogEntry(
+                userIP, remoteUser, dateTime, method, path, protocol, status, responseSize, referer, userAgent);
     }
-
 
     private OffsetDateTime parseDateTime(String dateTimeString) {
         // 	17/May/2015:08:05:32 +0000
         return OffsetDateTime.parse(dateTimeString, NGINX_DATE_FORMATTER);
+    }
+
+    public LocalDateTime parseLocalDateTime(String text) {
+        if (text == null) {
+            return null;
+        }
+        try {
+            return LocalDateTime.parse(text);
+        } catch (Exception ignored) {
+            LocalDate date = LocalDate.parse(text);
+            return date.atStartOfDay();
+        }
     }
 
 }

@@ -25,31 +25,25 @@ public class MarkdownFormatter extends AbstractFormatter {
         sb.append("|:---------------------:|-------------:|\n");
 
         String files = String.join(", ", r.analyzedFilesNames());
-        sb.append("|       Файл(-ы)        | `")
-            .append(files)
-            .append("` |\n");
+        sb.append("|       Файл(-ы)        | `").append(files).append("` |\n");
 
         String fromDate = r.from() != null ? r.from().toLocalDate().format(formatterToDDMMYYYY) : "-";
-        sb.append("|    Начальная дата     |   ")
-            .append(fromDate)
-            .append(" |\n");
+        sb.append("|    Начальная дата     |   ").append(fromDate).append(" |\n");
 
         String toDate = r.to() != null ? r.to().toLocalDate().format(formatterToDDMMYYYY) : "-";
-        sb.append("|     Конечная дата     |   ")
-            .append(toDate)
-            .append(" |\n");
+        sb.append("|     Конечная дата     |   ").append(toDate).append(" |\n");
 
         sb.append("|  Количество запросов  |       ")
-            .append(formatNumber(r.allRequestsCount()))
-            .append(" |\n");
+                .append(formatNumber(r.allRequestsCount()))
+                .append(" |\n");
 
         sb.append("| Средний размер ответа |         ")
-            .append(formatNumber(Math.round(r.averageResponseSize())))
-            .append("b |\n");
+                .append(formatNumber(Math.round(r.averageResponseSize())))
+                .append("b |\n");
 
         sb.append("|  95p размера ответа   |         ")
-            .append(formatNumber(Math.round(r.percentile95())))
-            .append("b |\n");
+                .append(formatNumber(Math.round(r.percentile95())))
+                .append("b |\n");
     }
 
     private void appendResources(StringBuilder sb, StatisticsReport r) {
@@ -60,10 +54,10 @@ public class MarkdownFormatter extends AbstractFormatter {
 
         for (Map.Entry<String, Long> entry : r.requestedPaths().entrySet()) {
             sb.append("| ")
-                .append(entry.getKey())
-                .append(" |      ")
-                .append(formatNumber(entry.getValue()))
-                .append(" |\n");
+                    .append(entry.getKey())
+                    .append(" |      ")
+                    .append(formatNumber(entry.getValue()))
+                    .append(" |\n");
         }
     }
 
@@ -79,12 +73,12 @@ public class MarkdownFormatter extends AbstractFormatter {
             String name = getStatusName(code);
 
             sb.append("| ")
-                .append(code)
-                .append(" | ")
-                .append(padCenter(name, 21))
-                .append(" |       ")
-                .append(formatNumber(count))
-                .append(" |\n");
+                    .append(code)
+                    .append(" | ")
+                    .append(padCenter(name, 21))
+                    .append(" |       ")
+                    .append(formatNumber(count))
+                    .append(" |\n");
         }
     }
 

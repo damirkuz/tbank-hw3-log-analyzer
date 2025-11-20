@@ -307,7 +307,6 @@
             <version>20231013</version>
         </dependency>
 
-
         <!-- Test libraries -->
         <dependency>
             <groupId>org.awaitility</groupId>
