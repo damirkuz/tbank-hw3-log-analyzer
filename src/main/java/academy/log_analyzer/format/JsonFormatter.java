@@ -6,11 +6,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
 public class JsonFormatter extends AbstractFormatter {
@@ -18,32 +16,40 @@ public class JsonFormatter extends AbstractFormatter {
     private static final ObjectMapper objectMapper = new ObjectMapper()
         .enable(SerializationFeature.INDENT_OUTPUT);
 
-
     @Override
     public String format(StatisticsReport statisticsReport) {
-        Map<String, Object> map = new LinkedHashMap<>();
-        map.put("files", statisticsReport.analyzedFilesNames());
-        map.put("totalRequestsCount", statisticsReport.allRequestsCount());
-
-        Map<String, Object> responseSizeInBytes = new LinkedHashMap<>();
-        responseSizeInBytes.put("average", statisticsReport.averageResponseSize());
-        responseSizeInBytes.put("max", statisticsReport.maxResponseSizeRequest());
-        responseSizeInBytes.put("p95", statisticsReport.percentile95());
-        map.put("responseSizeInBytes", responseSizeInBytes);
-
-        map.put("resources",
-            transformMapToJson(statisticsReport.requestedPaths(), "resource", "totalRequestsCount"));
-        map.put("responseCodes",
-            transformMapToJson(statisticsReport.statusCodesStatistics(), "code", "totalResponsesCount"));
-        map.put("requestsPerDate",
-            transformDatesToJson(statisticsReport.requestsInDate(), statisticsReport.allRequestsCount()));
-        map.put("uniqueProtocols", statisticsReport.uniqueProtocols());
+        Map<String, Object> json = buildJson(statisticsReport);
 
         try {
-            return objectMapper.writeValueAsString(map);
+            return objectMapper.writeValueAsString(json);
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private Map<String, Object> buildJson(StatisticsReport report) {
+        Map<String, Object> map = new LinkedHashMap<>();
+
+        map.put("files", report.analyzedFilesNames());
+        map.put("totalRequestsCount", report.allRequestsCount());
+        map.put("responseSizeInBytes", buildResponseSizeBlock(report));
+        map.put("resources",
+            transformMapToJson(report.requestedPaths(), "resource", "totalRequestsCount"));
+        map.put("responseCodes",
+            transformMapToJson(report.statusCodesStatistics(), "code", "totalResponsesCount"));
+        map.put("requestsPerDate",
+            transformDatesToJson(report.requestsInDate(), report.allRequestsCount()));
+        map.put("uniqueProtocols", report.uniqueProtocols());
+
+        return map;
+    }
+
+    private Map<String, Object> buildResponseSizeBlock(StatisticsReport report) {
+        Map<String, Object> responseSizeInBytes = new LinkedHashMap<>();
+        responseSizeInBytes.put("average", report.averageResponseSize());
+        responseSizeInBytes.put("max", report.maxResponseSizeRequest());
+        responseSizeInBytes.put("p95", report.percentile95());
+        return responseSizeInBytes;
     }
 
     private <K, V> List<Map<String, Object>> transformMapToJson(Map<K, V> map,

@@ -88,19 +88,6 @@ public class MarkdownFormatter extends AbstractFormatter {
         }
     }
 
-    private String formatNumber(long value) {
-        String s = Long.toString(value);
-        StringBuilder sb = new StringBuilder();
-        int len = s.length();
-        int firstGroup = len % 3 == 0 ? 3 : len % 3;
-
-        sb.append(s, 0, firstGroup);
-        for (int i = firstGroup; i < len; i += 3) {
-            sb.append('_').append(s, i, i + 3);
-        }
-        return sb.toString();
-    }
-
     private String padCenter(String text, int width) {
         if (text.length() >= width) {
             return text;
@@ -109,23 +96,5 @@ public class MarkdownFormatter extends AbstractFormatter {
         int left = totalPadding / 2;
         int right = totalPadding - left;
         return " ".repeat(left) + text + " ".repeat(right);
-    }
-
-    private String getStatusName(int code) {
-        return switch (code) {
-            case 200 -> "OK";
-            case 201 -> "Created";
-            case 204 -> "No Content";
-            case 301 -> "Moved Permanently";
-            case 302 -> "Found";
-            case 400 -> "Bad Request";
-            case 401 -> "Unauthorized";
-            case 403 -> "Forbidden";
-            case 404 -> "Not Found";
-            case 500 -> "Internal Server Error";
-            case 502 -> "Bad Gateway";
-            case 503 -> "Service Unavailable";
-            default -> "-";
-        };
     }
 }
