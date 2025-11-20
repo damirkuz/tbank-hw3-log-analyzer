@@ -296,6 +296,17 @@
             <artifactId>log4j-layout-template-json</artifactId>
             <scope>runtime</scope>
         </dependency>
+        <dependency>
+            <groupId>com.tdunning</groupId>
+            <artifactId>t-digest</artifactId>
+            <version>3.3</version>
+        </dependency>
+        <dependency>
+            <groupId>org.json</groupId>
+            <artifactId>json</artifactId>
+            <version>20231013</version>
+        </dependency>
+
 
         <!-- Test libraries -->
         <dependency>
@@ -504,6 +515,11 @@
                             <groupId>net.sourceforge.pmd</groupId>
                             <artifactId>pmd-java</artifactId>
                             <version>${pmd.version}</version>
+                        </dependency>
+                        <dependency>
+                            <groupId>com.tdunning</groupId>
+                            <artifactId>t-digest</artifactId>
+                            <version>3.3</version>
                         </dependency>
                     </dependencies>
                 </plugin>

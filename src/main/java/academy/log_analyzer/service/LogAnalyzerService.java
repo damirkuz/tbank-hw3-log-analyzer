@@ -1,15 +1,24 @@
 package academy.log_analyzer.service;
 
+import academy.log_analyzer.entity.LogEntry;
+import academy.log_analyzer.entity.StatisticsReport;
 import academy.log_analyzer.exception.DirectoryNotWritableException;
 import academy.log_analyzer.exception.InvalidFileFormatException;
 import academy.log_analyzer.exception.InvalidFormatFlagException;
 import academy.log_analyzer.format.FormatType;
+import academy.log_analyzer.format.Formatter;
+import academy.log_analyzer.format.JsonFormatter;
+import academy.log_analyzer.util.FileWriterUtil;
+import academy.log_analyzer.util.ParseUtil;
 import academy.log_analyzer.util.PathUtil;
 import academy.log_analyzer.util.TimeRangeMode;
 import academy.log_analyzer.util.TimeRangeUtil;
 import academy.log_analyzer.validation.InputValidator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 
@@ -17,8 +26,9 @@ public class LogAnalyzerService {
 
     private final static InputValidator inputValidator = new InputValidator();
     private final static PathUtil pathUtil = new PathUtil();
+    private static final Logger log = LoggerFactory.getLogger(LogAnalyzerService.class);
 
-    public void analyze(List<String> paths, String format, String output, Date from, Date to)
+    public void runAnalysis(List<String> paths, String format, String output, LocalDateTime from, LocalDateTime to)
         throws InvalidFileFormatException, IOException, DirectoryNotWritableException, InvalidFormatFlagException {
 
         FormatType formatType = FormatType.fromValue(format);
@@ -26,11 +36,50 @@ public class LogAnalyzerService {
         inputValidator.validateOutputFlag(output, formatType);
         inputValidator.validateFromAndTo(from, to);
 
-        TimeRangeMode timeRangeMode = TimeRangeUtil.getTimeRangeMode(from, to);
+        TimeRangeUtil timeRangeUtil = new TimeRangeUtil(from, to);
 
         List<BufferedReader> readerList = pathUtil.getAllBufferedReadersFromPaths(paths);
 
+        StatisticsReport statisticsReport = analyzeLogs(readerList, formatType, timeRangeUtil, output);
 
+        Formatter formatter = getFormatter(formatType);
+
+        String reportInString = formatter.format(statisticsReport);
+
+        FileWriterUtil.writeFile(reportInString, output);
+    }
+
+    private StatisticsReport analyzeLogs(List<BufferedReader> logReaders, FormatType formatType, TimeRangeUtil timeRangeUtil, String output) {
+        LogStatisticsCollector statisticsCollector = new LogStatisticsCollector();
+        ParseUtil parseUtil = new ParseUtil();
+
+        for (BufferedReader reader: logReaders) {
+            try {
+                String logString;
+                while ((logString = reader.readLine()) != null) {
+                    LogEntry logEntry = parseUtil.parseNginxLog(logString);
+
+                    if (logEntry == null) {
+                        log.warn("Не удалось считать строку");
+                    } else {
+                        if (timeRangeUtil.isCorrectTimeRangeForLogEntry(logEntry)) {
+                            statisticsCollector.addLogInStatistics(logEntry);
+                        }
+                    }
+                }
+            } catch (IOException e) {
+                log.error(e.getMessage(), e);
+            }
+        }
+
+        return statisticsCollector.getReport();
+    }
+
+    private Formatter getFormatter(FormatType formatType) {
+        return switch (formatType) {
+            case JSON -> new JsonFormatter();
+            default -> new JsonFormatter();
+        };
     }
 
 }

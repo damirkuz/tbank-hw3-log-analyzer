@@ -24,6 +24,8 @@ public class PathUtil {
 
     private final InputValidator inputValidator = new InputValidator();
 
+    private final HttpClient httpClient = HttpClient.newHttpClient();
+
 
     public List<BufferedReader> getAllBufferedReadersFromPaths(List<String> paths) throws IOException, InvalidFileFormatException {
         List<BufferedReader> result = new ArrayList<>();
@@ -61,18 +63,16 @@ public class PathUtil {
     }
 
     private BufferedReader readFileFromUrl(String uri) throws IOException, InterruptedException {
-        try (HttpClient client = HttpClient.newHttpClient()) {
-            HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(uri))
-                .build();
+        HttpRequest request = HttpRequest.newBuilder()
+            .uri(URI.create(uri))
+            .build();
 
-            HttpResponse<InputStream> response = client.send(
-                request,
-                HttpResponse.BodyHandlers.ofInputStream()
-            );
+        HttpResponse<InputStream> response = httpClient.send(
+            request,
+            HttpResponse.BodyHandlers.ofInputStream()
+        );
 
-            return new BufferedReader(new InputStreamReader(response.body()));
-        }
+        return new BufferedReader(new InputStreamReader(response.body()));
     }
 
     private List<BufferedReader> expandLocalPattern(String pattern) throws IOException {

@@ -14,6 +14,7 @@ import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 public class InputValidator {
@@ -98,8 +99,8 @@ public class InputValidator {
         }
     }
 
-    public void validateFromAndTo(Date from, Date to) {
-        if (from != null && to != null && from.after(to)) {
+    public void validateFromAndTo(LocalDateTime from, LocalDateTime to) {
+        if (from != null && to != null && from.isAfter(to)) {
             throw new IllegalArgumentException("Дата флага from больше to");
         }
     }

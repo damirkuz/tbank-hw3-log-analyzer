@@ -8,6 +8,7 @@ import academy.log_analyzer.service.LogAnalyzerService;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.LocalDateTime;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -109,19 +110,21 @@ public class Application implements Runnable {
 
     @Option(
             names = {"--from"},
+            required = false,
             description = "стартовая точка времени в формате ISO8601")
-    Date from;
+    LocalDateTime from;
 
     @Option(
             names = {"--to"},
+            required = false,
             description = "конечная точка времени в формате ISO8601")
-    Date to;
+    LocalDateTime to;
 
     @Override
     public void run() {
         LogAnalyzerService service = new LogAnalyzerService();
         try {
-            service.analyze(paths, format, output, from, to);
+            service.runAnalysis(paths, format, output, from, to);
         } catch (InvalidFileFormatException | DirectoryNotWritableException | IOException e) {
             throw new IllegalArgumentException(e.getMessage(), e);
         } catch (Exception e) {

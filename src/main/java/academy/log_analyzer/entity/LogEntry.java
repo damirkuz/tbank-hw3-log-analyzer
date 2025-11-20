@@ -1,11 +1,11 @@
 package academy.log_analyzer.entity;
 
-import java.time.Instant;
+import java.time.OffsetDateTime;
 
 public record LogEntry (
     String userIP,
     String remoteUser,
-    Instant timestamp,
+    OffsetDateTime offsetDateTime,
     String method,
     String path,
     String protocol,

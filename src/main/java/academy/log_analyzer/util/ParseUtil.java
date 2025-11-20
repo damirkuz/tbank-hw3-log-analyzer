@@ -3,7 +3,6 @@ package academy.log_analyzer.util;
 import academy.log_analyzer.entity.LogEntry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
@@ -18,7 +17,8 @@ public class ParseUtil {
 
     private static final Logger log = LoggerFactory.getLogger(ParseUtil.class);
 
-    private static final Pattern splitIntoParts = Pattern.compile("^((\\d{1,3}\\.){3}\\d{1,3}) - (.+?) \\[(.+?)\\] \\\"(.+?)\\\"$");
+    private static final Pattern splitIntoParts = Pattern.compile("^(.+?) - (.+?) \\[(.+?)\\] \"(.+?)\"$");
+//    private static final Pattern splitIntoParts = Pattern.compile("^((\\d{1,3}\\.){3}\\d{1,3}) - (.+?) \\[(.+?)\\] \\\"(.+?)\\\"$");
     private static final Pattern splitRequest = Pattern.compile("([A-Za-z]+?) (.+?) (.+?)\\\" (\\d+) (\\d+) \\\"(.+)\\\" \\\"(.+)");
 
     private static final DateTimeFormatter NGINX_DATE_FORMATTER = DateTimeFormatter.ofPattern("dd/MMM/yyyy:HH:mm:ss Z", Locale.ENGLISH);
@@ -30,7 +30,7 @@ public class ParseUtil {
             log.warn("Строка {} не соответствует стандартному формату", string);
             return null;
         }
-        Matcher matcherRequest = splitRequest.matcher(matcherOnGroups.group(5));
+        Matcher matcherRequest = splitRequest.matcher(matcherOnGroups.group(4));
         if (!matcherRequest.matches()) {
             log.warn("Строка {} не соответствует стандартному формату", string);
             return null;
@@ -38,9 +38,9 @@ public class ParseUtil {
 
         String userIP = matcherOnGroups.group(1);
 
-        Instant timestamp = parseTimestamp(matcherOnGroups.group(4));
+        OffsetDateTime dateTime = parseDateTime(matcherOnGroups.group(3));
 
-        String remoteUser = matcherOnGroups.group(3);
+        String remoteUser = matcherOnGroups.group(2);
 
         // "GET /downloads/product_1 HTTP/1.1" 304 0 "-" "Debian APT-HTTP/1.3 (0.8.16~exp12ubuntu10.21)"
         String method = matcherRequest.group(1);
@@ -51,14 +51,13 @@ public class ParseUtil {
         String referer = matcherRequest.group(6);
         String userAgent = matcherRequest.group(7);
 
-        return new LogEntry(userIP, remoteUser, timestamp, method, path, protocol, status, responseSize, referer, userAgent);
+        return new LogEntry(userIP, remoteUser, dateTime, method, path, protocol, status, responseSize, referer, userAgent);
     }
 
 
-    private Instant parseTimestamp(String timestampString) {
+    private OffsetDateTime parseDateTime(String dateTimeString) {
         // 	17/May/2015:08:05:32 +0000
-        OffsetDateTime odt = OffsetDateTime.parse(timestampString, NGINX_DATE_FORMATTER);
-        return odt.toInstant();
+        return OffsetDateTime.parse(dateTimeString, NGINX_DATE_FORMATTER);
     }
 
 }
