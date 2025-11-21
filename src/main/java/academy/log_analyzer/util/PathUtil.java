@@ -29,7 +29,7 @@ public class PathUtil {
     private final HttpClient httpClient = HttpClient.newHttpClient();
 
     public List<AnalyzedFile> getAllBufferedReadersFromPaths(List<String> paths)
-        throws IOException, InvalidFileFormatException {
+            throws IOException, InvalidFileFormatException {
         List<AnalyzedFile> result = new ArrayList<>();
 
         for (String path : paths) {
