@@ -8,7 +8,6 @@ import com.tdunning.math.stats.MergingDigest;
 import com.tdunning.math.stats.TDigest;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -99,11 +98,6 @@ public class LogStatisticsCollector {
     }
 
     private List<String> getAnalyzedFilesNames(List<AnalyzedFile> analyzedFiles) {
-        List<String> analyzedFilesNames = new ArrayList<>();
-
-        for (AnalyzedFile analyzedFile : analyzedFiles) {
-            analyzedFilesNames.add(analyzedFile.fileName());
-        }
-        return analyzedFilesNames;
+        return analyzedFiles.stream().map(AnalyzedFile::fileName).sorted().toList();
     }
 }
