@@ -1,0 +1,181 @@
+{
+  "files": [
+    "part1.txt",
+    "part2.txt",
+    "https://raw.githubusercontent.com/elastic/examples/master/Common%20Data%20Formats/nginx_logs/nginx_logs"
+  ],
+  "totalRequestsCount": 51718,
+  "responseSizeInBytes": {
+    "average": 656246.01,
+    "max": 8.6377168E7,
+    "p95": 1768.6
+  },
+  "resources": [
+    {
+      "resource": "/downloads/product_3",
+      "totalRequestsCount": 73
+    },
+    {
+      "resource": "/downloads/product_1",
+      "totalRequestsCount": 30430
+    },
+    {
+      "resource": "/downloads/product_2",
+      "totalRequestsCount": 21215
+    }
+  ],
+  "responseCodes": [
+    {
+      "code": 304,
+      "totalResponsesCount": 13469
+    },
+    {
+      "code": 416,
+      "totalResponsesCount": 4
+    },
+    {
+      "code": 403,
+      "totalResponsesCount": 38
+    },
+    {
+      "code": 404,
+      "totalResponsesCount": 33979
+    },
+    {
+      "code": 200,
+      "totalResponsesCount": 4042
+    },
+    {
+      "code": 206,
+      "totalResponsesCount": 186
+    }
+  ],
+  "requestsPerDate": [
+    {
+      "date": "2015-05-01",
+      "weekday": "Friday",
+      "totalRequestsCount": 1,
+      "totalRequestsPercentage": 0.0
+    },
+    {
+      "date": "2015-05-17",
+      "weekday": "Sunday",
+      "totalRequestsCount": 2221,
+      "totalRequestsPercentage": 4.29
+    },
+    {
+      "date": "2015-05-18",
+      "weekday": "Monday",
+      "totalRequestsCount": 2855,
+      "totalRequestsPercentage": 5.52
+    },
+    {
+      "date": "2015-05-19",
+      "weekday": "Tuesday",
+      "totalRequestsCount": 2831,
+      "totalRequestsPercentage": 5.47
+    },
+    {
+      "date": "2015-05-20",
+      "weekday": "Wednesday",
+      "totalRequestsCount": 2851,
+      "totalRequestsPercentage": 5.51
+    },
+    {
+      "date": "2015-05-21",
+      "weekday": "Thursday",
+      "totalRequestsCount": 2881,
+      "totalRequestsPercentage": 5.57
+    },
+    {
+      "date": "2015-05-22",
+      "weekday": "Friday",
+      "totalRequestsCount": 2879,
+      "totalRequestsPercentage": 5.57
+    },
+    {
+      "date": "2015-05-23",
+      "weekday": "Saturday",
+      "totalRequestsCount": 2892,
+      "totalRequestsPercentage": 5.59
+    },
+    {
+      "date": "2015-05-24",
+      "weekday": "Sunday",
+      "totalRequestsCount": 2853,
+      "totalRequestsPercentage": 5.52
+    },
+    {
+      "date": "2015-05-25",
+      "weekday": "Monday",
+      "totalRequestsCount": 2839,
+      "totalRequestsPercentage": 5.49
+    },
+    {
+      "date": "2015-05-26",
+      "weekday": "Tuesday",
+      "totalRequestsCount": 2879,
+      "totalRequestsPercentage": 5.57
+    },
+    {
+      "date": "2015-05-27",
+      "weekday": "Wednesday",
+      "totalRequestsCount": 2887,
+      "totalRequestsPercentage": 5.58
+    },
+    {
+      "date": "2015-05-28",
+      "weekday": "Thursday",
+      "totalRequestsCount": 2852,
+      "totalRequestsPercentage": 5.51
+    },
+    {
+      "date": "2015-05-29",
+      "weekday": "Friday",
+      "totalRequestsCount": 2836,
+      "totalRequestsPercentage": 5.48
+    },
+    {
+      "date": "2015-05-30",
+      "weekday": "Saturday",
+      "totalRequestsCount": 2876,
+      "totalRequestsPercentage": 5.56
+    },
+    {
+      "date": "2015-05-31",
+      "weekday": "Sunday",
+      "totalRequestsCount": 2863,
+      "totalRequestsPercentage": 5.54
+    },
+    {
+      "date": "2015-06-01",
+      "weekday": "Monday",
+      "totalRequestsCount": 2837,
+      "totalRequestsPercentage": 5.49
+    },
+    {
+      "date": "2015-06-02",
+      "weekday": "Tuesday",
+      "totalRequestsCount": 2864,
+      "totalRequestsPercentage": 5.54
+    },
+    {
+      "date": "2015-06-03",
+      "weekday": "Wednesday",
+      "totalRequestsCount": 2825,
+      "totalRequestsPercentage": 5.46
+    },
+    {
+      "date": "2015-06-04",
+      "weekday": "Thursday",
+      "totalRequestsCount": 896,
+      "totalRequestsPercentage": 1.73
+    }
+  ],
+  "uniqueProtocols": [
+    "HTTP/1.1",
+    "HTTP/1.0",
+    "grpc",
+    "HTTP/2.1"
+  ]
+}
