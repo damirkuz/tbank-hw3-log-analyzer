@@ -46,7 +46,11 @@ public class PathUtil {
                 if (Files.exists(p)) {
                     log.info("Чтение файла: {}", path);
                     inputValidator.validatePathSuffix(path);
-                    result.add(new AnalyzedFile(p.getFileName().toString(), Files.newBufferedReader(p)));
+                    Path fileName = p.getFileName();
+                    if (fileName == null) {
+                        throw new IOException("Невозможно получить имя файла для пути: " + path);
+                    }
+                    result.add(new AnalyzedFile(fileName.toString(), Files.newBufferedReader(p)));
                 } else {
                     log.info("Поиск файлов по шаблону: {}", path);
                     List<AnalyzedFile> expanded = expandLocalPattern(path);
