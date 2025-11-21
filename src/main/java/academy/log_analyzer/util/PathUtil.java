@@ -29,12 +29,12 @@ public class PathUtil {
     private final HttpClient httpClient = HttpClient.newHttpClient();
 
     public List<AnalyzedFile> getAllBufferedReadersFromPaths(List<String> paths)
-            throws IOException, InvalidFileFormatException {
+        throws IOException, InvalidFileFormatException {
         List<AnalyzedFile> result = new ArrayList<>();
 
         for (String path : paths) {
             if (inputValidator.isCorrectUri(path)) {
-                log.info("Чтение удаленного файла: {}", path);
+                log.info("Загрузка удаленного файла: {}", path);
                 inputValidator.validateRemoteUrl(path);
                 try {
                     result.add(readFileFromUrl(path));
@@ -81,16 +81,19 @@ public class PathUtil {
         } else {
             dir = parent;
             Path fileName = p.getFileName();
-            fileGlob = (fileName != null) ? fileName.toString() : "";
+            if (fileName == null) {
+                return new ArrayList<>();
+            }
+            fileGlob = fileName.toString();
+        }
+
+        if (!Files.exists(dir) || !Files.isDirectory(dir)) {
+            return new ArrayList<>();
         }
 
         PathMatcher matcher = FileSystems.getDefault().getPathMatcher("glob:" + fileGlob);
 
         List<AnalyzedFile> result = new ArrayList<>();
-        if (!Files.exists(dir)) {
-            return result;
-        }
-
         try (DirectoryStream<Path> stream = Files.newDirectoryStream(dir)) {
             for (Path entry : stream) {
                 Path entryFileName = entry.getFileName();
