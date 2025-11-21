@@ -48,10 +48,8 @@ public class LogStatisticsCollector {
         countNotNullResponseSizeRequests++;
 
         tDigest.add(logEntry.responseSize());
-        if (logEntry.responseSize() != 0) {
-            if (logEntry.responseSize() > maxResponseSizeRequest) {
-                maxResponseSizeRequest = logEntry.responseSize();
-            }
+        if (logEntry.responseSize() != 0 && logEntry.responseSize() > maxResponseSizeRequest) {
+            maxResponseSizeRequest = logEntry.responseSize();
         }
 
         statusCodesStatistics.put(
