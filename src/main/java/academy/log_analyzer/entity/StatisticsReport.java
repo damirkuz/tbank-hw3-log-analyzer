@@ -15,6 +15,6 @@ public record StatisticsReport(
         Map<Integer, Long> statusCodesStatistics,
         Map<String, Long> requestedPaths,
         Map<LocalDate, Long> requestsInDate,
-        Set<String> uniqueProtocols,
+        List<String> uniqueProtocols,
         LocalDateTime from,
         LocalDateTime to) {}

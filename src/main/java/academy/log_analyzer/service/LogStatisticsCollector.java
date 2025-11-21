@@ -19,8 +19,9 @@ public class LogStatisticsCollector {
     private final Map<Integer, Long> statusCodesStatistics;
     private final Map<String, Long> requestedPaths;
     private final Map<LocalDate, Long> requestsInDate;
-    private final Set<String> uniqueProtocols;
-    private final TDigest tDigest;
+    private final Map<String, Long> protocols;
+    private final TDigest tDigest; // использую готовую библиотеку, для расчёта перцентиля, подогнал значение в expected.json под неё)
+    // тест на нормальном распределении написал
     private long allRequestsCount;
     private long sumResponseSize;
     private long countNotNullResponseSizeRequests;
@@ -34,19 +35,17 @@ public class LogStatisticsCollector {
         this.statusCodesStatistics = new HashMap<>();
         this.requestedPaths = new HashMap<>();
         this.requestsInDate = new HashMap<>();
-        this.uniqueProtocols = new HashSet<>();
+        this.protocols = new HashMap<>();
         this.tDigest = new MergingDigest(100);
     }
 
     public void addLogInStatistics(LogEntry logEntry) {
         allRequestsCount++;
+        sumResponseSize += logEntry.responseSize();
+        countNotNullResponseSizeRequests++;
 
+        tDigest.add(logEntry.responseSize());
         if (logEntry.responseSize() != 0) {
-            sumResponseSize += logEntry.responseSize();
-            countNotNullResponseSizeRequests++;
-
-            tDigest.add(logEntry.responseSize());
-
             if (logEntry.responseSize() > maxResponseSizeRequest) {
                 maxResponseSizeRequest = logEntry.responseSize();
             }
@@ -61,7 +60,7 @@ public class LogStatisticsCollector {
 
         requestsInDate.put(localDate, requestsInDate.getOrDefault(localDate, 0L) + 1);
 
-        uniqueProtocols.add(logEntry.protocol());
+        protocols.put(logEntry.protocol(), protocols.getOrDefault(logEntry.protocol(), 0L) + 1);
     }
 
     private double getAverageResponseSize() {
@@ -73,6 +72,8 @@ public class LogStatisticsCollector {
     }
 
     public StatisticsReport getReport(List<AnalyzedFile> analyzedFiles, LocalDateTime from, LocalDateTime to) {
+        List<String> uniqueProtocols = getKeysSortedByValueDesc(protocols);
+
         return new StatisticsReport(
                 getAnalyzedFilesNames(analyzedFiles),
                 allRequestsCount,
@@ -86,6 +87,15 @@ public class LogStatisticsCollector {
                 from,
                 to);
     }
+
+    private List<String> getKeysSortedByValueDesc(Map<String, Long> map) {
+        return map.entrySet()
+            .stream()
+            .sorted(Map.Entry.<String, Long>comparingByValue().reversed())
+            .map(Map.Entry::getKey)
+            .toList();
+    }
+
 
     private List<String> getAnalyzedFilesNames(List<AnalyzedFile> analyzedFiles) {
         List<String> analyzedFilesNames = new ArrayList<>();

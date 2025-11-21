@@ -7,7 +7,7 @@
   "responseSizeInBytes": {
     "average": 206.05,
     "max": 3318.0,
-    "p95": 382.0
+    "p95": 490.0
   },
   "resources": [
     {
@@ -47,10 +47,10 @@
       "totalRequestsPercentage": 99.61
     }
   ],
-  "uniqueProtocols": [
-    "HTTP/1.1",
-    "HTTP/1.0",
-    "HTTP/2.1",
-    "grpc"
-  ]
+    "uniqueProtocols": [
+        "HTTP/1.1",
+        "HTTP/1.0",
+        "grpc",
+        "HTTP/2.1"
+    ]
 }

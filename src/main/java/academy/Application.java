@@ -119,9 +119,18 @@ public class Application implements Runnable {
             description = "конечная точка времени в формате ISO8601")
     String to;
 
+    private final LogAnalyzerService service;
+
+    public Application() {
+        this(new LogAnalyzerService());
+    }
+
+    Application(LogAnalyzerService service) {
+        this.service = service;
+    }
+
     @Override
     public void run() {
-        LogAnalyzerService service = new LogAnalyzerService();
         try {
             service.runAnalysis(paths, format, output, from, to);
         } catch (InvalidFileFormatException | DirectoryNotWritableException | IOException e) {

@@ -22,13 +22,10 @@ public class ParseUtil {
     private static final Logger log = LoggerFactory.getLogger(ParseUtil.class);
 
     private static final Pattern splitIntoParts = Pattern.compile("^(.+?) - (.+?) \\[(.+?)\\] \"(.+?)\"$");
-    //    private static final Pattern splitIntoParts = Pattern.compile("^((\\d{1,3}\\.){3}\\d{1,3}) - (.+?) \\[(.+?)\\]
-    // \\\"(.+?)\\\"$");
-    private static final Pattern splitRequest =
-            Pattern.compile("([A-Za-z]+?) (.+?) (.+?)\\\" (\\d+) (\\d+) \\\"(.+)\\\" \\\"(.+)");
+    private static final Pattern splitRequest = Pattern.compile("([A-Za-z]+?) (.+?) (.+?)\\\" (\\d+) (\\d+) \\\"(.+)\\\" \\\"(.+)");
 
     private static final DateTimeFormatter NGINX_DATE_FORMATTER =
-            DateTimeFormatter.ofPattern("dd/MMM/yyyy:HH:mm:ss Z", Locale.ENGLISH);
+            DateTimeFormatter.ofPattern("d/MMM/yyyy:HH:mm:ss Z", Locale.ENGLISH);
 
     public LogEntry parseNginxLog(String string) {
         Matcher matcherOnGroups = splitIntoParts.matcher(string);

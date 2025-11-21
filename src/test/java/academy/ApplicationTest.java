@@ -1,22 +1,45 @@
 package academy;
 
-import static org.junit.jupiter.api.Assertions.fail;
-
+import academy.log_analyzer.service.LogAnalyzerService;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
 import picocli.CommandLine;
-import java.io.File;
+import java.util.List;
 
-public class ApplicationTest {
+
+@ExtendWith(MockitoExtension.class)
+class ApplicationTest {
+
+    @Mock
+    LogAnalyzerService service;
 
     @Test
-    @DisplayName("Базовая проверка работоспособности программы")
-    void happyPathTest() {
-        Application application = new Application();
-
-        String[] args = {"--path", "nginx_logs.log", "--format", "markdown", "--output", "report2.md"};
+    @DisplayName("Корректные аргументы, сервис вызывается")
+    void happyPathTest() throws Exception {
+        Application application = new Application(service);
         CommandLine cmd = new CommandLine(application);
 
-        System.out.println(cmd.execute(args));
+        String[] args = {
+            "--path", "nginx_logs.log",
+            "--format", "markdown",
+            "--output", "report.md"
+        };
+
+        int exitCode = cmd.execute(args);
+
+        Assertions.assertEquals(0, exitCode);
+        Mockito.verify(service).runAnalysis(
+            List.of("nginx_logs.log"),
+            "markdown",
+            "report.md",
+            null,
+            null
+        );
     }
 }
+
