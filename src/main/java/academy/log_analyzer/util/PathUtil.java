@@ -74,21 +74,28 @@ public class PathUtil {
         Path dir;
         String fileGlob;
 
-        if (p.getParent() == null) {
+        Path parent = p.getParent();
+        if (parent == null) {
             dir = Path.of(".");
             fileGlob = pattern;
         } else {
-            dir = p.getParent();
-            fileGlob = p.getFileName().toString();
+            dir = parent;
+            Path fileName = p.getFileName();
+            fileGlob = (fileName != null) ? fileName.toString() : "";
         }
 
         PathMatcher matcher = FileSystems.getDefault().getPathMatcher("glob:" + fileGlob);
 
         List<AnalyzedFile> result = new ArrayList<>();
+        if (!Files.exists(dir)) {
+            return result;
+        }
+
         try (DirectoryStream<Path> stream = Files.newDirectoryStream(dir)) {
             for (Path entry : stream) {
-                if (matcher.matches(entry.getFileName())) {
-                    result.add(new AnalyzedFile(entry.getFileName().toString(), Files.newBufferedReader(entry)));
+                Path entryFileName = entry.getFileName();
+                if (entryFileName != null && matcher.matches(entryFileName)) {
+                    result.add(new AnalyzedFile(entryFileName.toString(), Files.newBufferedReader(entry)));
                 }
             }
         }

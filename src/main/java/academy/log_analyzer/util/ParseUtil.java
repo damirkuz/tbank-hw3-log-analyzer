@@ -13,40 +13,31 @@ import org.slf4j.LoggerFactory;
 
 public class ParseUtil {
 
-    // Примеры логов
-    // '$remote_addr - $remote_user [$time_local] ' '"$request" $status $body_bytes_sent ' '"$http_referer"
-    // "$http_user_agent"'
-    // 93.180.71.3 - - [17/May/2015:08:05:32 +0000] "GET /downloads/product_1 HTTP/1.1" 304 0 "-" "Debian APT-HTTP/1.3
-    // (0.8.16~exp12ubuntu10.21)"
-
     private static final Logger log = LoggerFactory.getLogger(ParseUtil.class);
 
-    private static final Pattern splitIntoParts = Pattern.compile("^(.+?) - (.+?) \\[(.+?)\\] \"(.+?)\"$");
-    private static final Pattern splitRequest =
+    private static final Pattern SPLIT_INTO_PARTS = Pattern.compile("^(.+?) - (.+?) \\[(.+?)\\] \"(.+?)\"$");
+    private static final Pattern SPLIT_REQUEST =
             Pattern.compile("([A-Za-z]+?) (.+?) (.+?)\\\" (\\d+) (\\d+) \\\"(.+)\\\" \\\"(.+)");
 
     private static final DateTimeFormatter NGINX_DATE_FORMATTER =
             DateTimeFormatter.ofPattern("d/MMM/yyyy:HH:mm:ss Z", Locale.ENGLISH);
 
     public LogEntry parseNginxLog(String string) {
-        Matcher matcherOnGroups = splitIntoParts.matcher(string);
+        Matcher matcherOnGroups = SPLIT_INTO_PARTS.matcher(string);
         if (!matcherOnGroups.matches()) {
-            log.warn("Строка {} не соответствует стандартному формату", string);
+            log.warn("Строка не соответствует стандартному формату");
             return null;
         }
-        Matcher matcherRequest = splitRequest.matcher(matcherOnGroups.group(4));
+        Matcher matcherRequest = SPLIT_REQUEST.matcher(matcherOnGroups.group(4));
         if (!matcherRequest.matches()) {
-            log.warn("Строка {} не соответствует стандартному формату", string);
+            log.warn("Строка не соответствует стандартному формату");
             return null;
         }
 
         String userIP = matcherOnGroups.group(1);
-
         OffsetDateTime dateTime = parseDateTime(matcherOnGroups.group(3));
-
         String remoteUser = matcherOnGroups.group(2);
 
-        // "GET /downloads/product_1 HTTP/1.1" 304 0 "-" "Debian APT-HTTP/1.3 (0.8.16~exp12ubuntu10.21)"
         String method = matcherRequest.group(1);
         String path = matcherRequest.group(2);
         String protocol = matcherRequest.group(3);
@@ -60,7 +51,6 @@ public class ParseUtil {
     }
 
     private OffsetDateTime parseDateTime(String dateTimeString) {
-        // 	17/May/2015:08:05:32 +0000
         return OffsetDateTime.parse(dateTimeString, NGINX_DATE_FORMATTER);
     }
 

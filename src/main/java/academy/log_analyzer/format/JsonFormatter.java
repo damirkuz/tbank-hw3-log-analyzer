@@ -55,10 +55,10 @@ public class JsonFormatter extends AbstractFormatter {
     private <K, V> List<Map<String, Object>> transformMapToJson(Map<K, V> map, String keyName, String valueName) {
         List<Map<String, Object>> result = new ArrayList<>();
 
-        for (K key : map.keySet()) {
+        for (Map.Entry<K, V> entry : map.entrySet()) {
             Map<String, Object> linkedHashMap = new LinkedHashMap<>();
-            linkedHashMap.put(keyName, key);
-            linkedHashMap.put(valueName, map.get(key));
+            linkedHashMap.put(keyName, entry.getKey());
+            linkedHashMap.put(valueName, entry.getValue());
             result.add(linkedHashMap);
         }
         return result;

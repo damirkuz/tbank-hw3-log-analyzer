@@ -53,7 +53,7 @@ public class LogAnalyzerService {
         Formatter formatter = getFormatter(formatType);
         String reportInString = formatter.format(statisticsReport);
 
-        log.info("Сохранение результата в файл: {}", output);
+        log.info("Сохранение результата");
         FileWriterUtil.writeFile(reportInString, output);
 
         log.info("Анализ завершен");
@@ -78,7 +78,7 @@ public class LogAnalyzerService {
                     }
                 }
             } catch (IOException e) {
-                log.error("Ошибка чтения файла: {}", e.getMessage());
+                log.error("Ошибка чтения файла");
             }
         }
 
