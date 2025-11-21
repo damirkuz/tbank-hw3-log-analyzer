@@ -16,6 +16,7 @@ import java.nio.file.Path;
 import java.time.LocalDateTime;
 
 public class InputValidator {
+
     public void validatePathSuffix(String path) throws InvalidFileFormatException {
         if (!path.endsWith(".txt") && !path.endsWith(".log")) {
             throw new InvalidFileFormatException("Некорректный суффикс файла");
@@ -29,7 +30,6 @@ public class InputValidator {
                     "Расширение файла output " + outputFlag + " не соответствует ожидаемому");
         }
 
-        // локальные файлы
         Path path = Path.of(outputFlag);
         if (Files.exists(path)) {
             throw new FileAlreadyExistsException("output файл уже существует");
@@ -37,7 +37,6 @@ public class InputValidator {
 
         Path parent = path.getParent();
         if (parent == null) {
-            // файл в текущей директории
             parent = Path.of(".");
         }
 
@@ -71,7 +70,6 @@ public class InputValidator {
     }
 
     public void validateRemoteUrl(String value) throws IOException {
-
         if (!isCorrectUri(value)) {
             throw new IllegalArgumentException("Некорректная ссылка: " + value);
         }

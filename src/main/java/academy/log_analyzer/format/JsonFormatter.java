@@ -1,13 +1,10 @@
 package academy.log_analyzer.format;
 
 import academy.log_analyzer.entity.StatisticsReport;
-import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.util.DefaultIndenter;
 import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
-import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
@@ -19,8 +16,7 @@ import java.util.Map;
 
 public class JsonFormatter extends AbstractFormatter {
 
-    private static final ObjectMapper objectMapper = new ObjectMapper()
-        .enable(SerializationFeature.INDENT_OUTPUT);
+    private static final ObjectMapper objectMapper = new ObjectMapper().enable(SerializationFeature.INDENT_OUTPUT);
 
     private static final DefaultPrettyPrinter prettyPrinter = new CustomJsonPrinter();
 
@@ -56,11 +52,7 @@ public class JsonFormatter extends AbstractFormatter {
         return responseSizeInBytes;
     }
 
-    private <K, V> List<Map<String, Object>> transformMapToJson(
-        Map<K, V> map,
-        String keyName,
-        String valueName
-    ) {
+    private <K, V> List<Map<String, Object>> transformMapToJson(Map<K, V> map, String keyName, String valueName) {
         List<Map<String, Object>> result = new ArrayList<>();
 
         for (K key : map.keySet()) {
@@ -84,8 +76,7 @@ public class JsonFormatter extends AbstractFormatter {
             linkedHashMap.put("weekday", capitalize(date.getDayOfWeek().toString()));
             long count = dates.get(date);
             linkedHashMap.put("totalRequestsCount", count);
-            linkedHashMap.put("totalRequestsPercentage",
-                round(getTotalRequestsPercentage(allRequestsCount, count), 2));
+            linkedHashMap.put("totalRequestsPercentage", round(getTotalRequestsPercentage(allRequestsCount, count), 2));
 
             result.add(linkedHashMap);
         }
@@ -93,9 +84,7 @@ public class JsonFormatter extends AbstractFormatter {
     }
 
     private static double round(double value, int scale) {
-        return BigDecimal.valueOf(value)
-            .setScale(scale, RoundingMode.HALF_UP)
-            .doubleValue();
+        return BigDecimal.valueOf(value).setScale(scale, RoundingMode.HALF_UP).doubleValue();
     }
 
     private static String capitalize(String s) {

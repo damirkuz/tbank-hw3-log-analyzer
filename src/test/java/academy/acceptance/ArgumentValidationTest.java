@@ -1,15 +1,8 @@
 package academy.acceptance;
 
-import academy.log_analyzer.exception.DirectoryNotWritableException;
 import academy.log_analyzer.exception.InvalidFileFormatException;
 import academy.log_analyzer.exception.InvalidFormatFlagException;
 import academy.log_analyzer.service.LogAnalyzerService;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.FileAlreadyExistsException;
@@ -17,6 +10,11 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 
 public class ArgumentValidationTest {
 
@@ -31,7 +29,9 @@ public class ArgumentValidationTest {
 
         tempLogFile = Files.createTempFile("test_log", ".log");
         tempFiles.add(tempLogFile);
-        Files.writeString(tempLogFile, "93.180.71.3 - - [17/May/2015:08:05:32 +0000] \"GET /downloads/product_1 HTTP/1.1\" 304 0 \"-\" \"Debian APT-HTTP/1.3\"\n");
+        Files.writeString(
+                tempLogFile,
+                "93.180.71.3 - - [17/May/2015:08:05:32 +0000] \"GET /downloads/product_1 HTTP/1.1\" 304 0 \"-\" \"Debian APT-HTTP/1.3\"\n");
     }
 
     @AfterEach
@@ -313,7 +313,8 @@ public class ArgumentValidationTest {
         String format = "markdown";
 
         Assertions.assertThrows(IllegalArgumentException.class, () -> {
-            analyzerService.runAnalysis(paths, format, tempOutput.toString(), "2025-12-31T23:59:59", "2025-01-01T00:00:00");
+            analyzerService.runAnalysis(
+                    paths, format, tempOutput.toString(), "2025-12-31T23:59:59", "2025-01-01T00:00:00");
         });
     }
 }

@@ -19,11 +19,13 @@ import java.nio.file.Path;
 import java.nio.file.PathMatcher;
 import java.util.ArrayList;
 import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class PathUtil {
 
+    private static final Logger log = LoggerFactory.getLogger(PathUtil.class);
     private final InputValidator inputValidator = new InputValidator();
-
     private final HttpClient httpClient = HttpClient.newHttpClient();
 
     public List<AnalyzedFile> getAllBufferedReadersFromPaths(List<String> paths)
@@ -32,23 +34,21 @@ public class PathUtil {
 
         for (String path : paths) {
             if (inputValidator.isCorrectUri(path)) {
-                // веб файл
+                log.info("Чтение удаленного файла: {}", path);
                 inputValidator.validateRemoteUrl(path);
                 try {
                     result.add(readFileFromUrl(path));
                 } catch (InterruptedException e) {
                     throw new FileNotFoundException("Ошибка при получении файла по пути " + path);
                 }
-
             } else {
-                // локальные файлы
                 Path p = Path.of(path);
                 if (Files.exists(p)) {
-                    // обычный файл
+                    log.info("Чтение файла: {}", path);
                     inputValidator.validatePathSuffix(path);
                     result.add(new AnalyzedFile(p.getFileName().toString(), Files.newBufferedReader(p)));
                 } else {
-                    // glob шаблон
+                    log.info("Поиск файлов по шаблону: {}", path);
                     List<AnalyzedFile> expanded = expandLocalPattern(path);
                     if (expanded.isEmpty()) {
                         throw new FileNotFoundException("Локальные файл(ы) по пути " + path + " не найден(ы)");
@@ -75,7 +75,7 @@ public class PathUtil {
         String fileGlob;
 
         if (p.getParent() == null) {
-            dir = Path.of("."); // текущая директория
+            dir = Path.of(".");
             fileGlob = pattern;
         } else {
             dir = p.getParent();

@@ -1,21 +1,20 @@
 package academy.acceptance;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import academy.log_analyzer.service.LogAnalyzerService;
 import com.tdunning.math.stats.TDigest;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Random;
 import java.util.stream.DoubleStream;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 
 public class StatsCalculationTest {
 
@@ -44,7 +43,8 @@ public class StatsCalculationTest {
     @Test
     @DisplayName("Расчет статистики на основании локального log-файла")
     void happyPathTest() throws Exception {
-        String logContent = """
+        String logContent =
+                """
             93.180.71.3 - - [17/May/2015:08:05:32 +0000] "GET /downloads/product_1 HTTP/1.1" 304 100 "-" "Debian APT-HTTP/1.3"
             93.180.71.3 - - [17/May/2015:08:05:33 +0000] "GET /downloads/product_2 HTTP/1.1" 200 200 "-" "Debian APT-HTTP/1.3"
             93.180.71.3 - - [17/May/2015:08:05:34 +0000] "GET /downloads/product_1 HTTP/1.1" 200 300 "-" "Debian APT-HTTP/1.3"
@@ -53,13 +53,7 @@ public class StatsCalculationTest {
             """;
         Files.writeString(tempLogFile, logContent);
 
-        analyzerService.runAnalysis(
-            List.of(tempLogFile.toString()),
-            "json",
-            tempOutputFile.toString(),
-            null,
-            null
-        );
+        analyzerService.runAnalysis(List.of(tempLogFile.toString()), "json", tempOutputFile.toString(), null, null);
 
         assertTrue(Files.exists(tempOutputFile));
         String content = Files.readString(tempOutputFile);
@@ -81,9 +75,7 @@ public class StatsCalculationTest {
         int sampleSize = 1_000_000;
         Random random = new Random();
 
-        DoubleStream.generate(random::nextGaussian)
-            .limit(sampleSize)
-            .forEach(digest::add);
+        DoubleStream.generate(random::nextGaussian).limit(sampleSize).forEach(digest::add);
 
         double actualP95 = digest.quantile(0.95);
         double expectedP95 = 1.644853626951;

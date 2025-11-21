@@ -10,17 +10,20 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class LogStatisticsCollector {
+    private static final Logger log = LoggerFactory.getLogger(LogStatisticsCollector.class);
+
     private final Map<Integer, Long> statusCodesStatistics;
     private final Map<String, Long> requestedPaths;
     private final Map<LocalDate, Long> requestsInDate;
     private final Map<String, Long> protocols;
-    private final TDigest tDigest; // использую готовую библиотеку, для расчёта перцентиля, подогнал значение в expected.json под неё)
+    private final TDigest
+            tDigest; // использую готовую библиотеку, для расчёта перцентиля, подогнал значение в expected.json под неё)
     // тест на нормальном распределении написал
     private long allRequestsCount;
     private long sumResponseSize;
@@ -72,6 +75,8 @@ public class LogStatisticsCollector {
     }
 
     public StatisticsReport getReport(List<AnalyzedFile> analyzedFiles, LocalDateTime from, LocalDateTime to) {
+        log.info("Обработано записей: {}", allRequestsCount);
+
         List<String> uniqueProtocols = getKeysSortedByValueDesc(protocols);
 
         return new StatisticsReport(
@@ -89,13 +94,11 @@ public class LogStatisticsCollector {
     }
 
     private List<String> getKeysSortedByValueDesc(Map<String, Long> map) {
-        return map.entrySet()
-            .stream()
-            .sorted(Map.Entry.<String, Long>comparingByValue().reversed())
-            .map(Map.Entry::getKey)
-            .toList();
+        return map.entrySet().stream()
+                .sorted(Map.Entry.<String, Long>comparingByValue().reversed())
+                .map(Map.Entry::getKey)
+                .toList();
     }
-
 
     private List<String> getAnalyzedFilesNames(List<AnalyzedFile> analyzedFiles) {
         List<String> analyzedFilesNames = new ArrayList<>();

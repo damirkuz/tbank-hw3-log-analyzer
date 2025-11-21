@@ -32,27 +32,31 @@ public class LogAnalyzerService {
     public void runAnalysis(List<String> paths, String format, String output, String stringFrom, String stringTo)
             throws InvalidFileFormatException, IOException, DirectoryNotWritableException, InvalidFormatFlagException {
 
-        FormatType formatType = FormatType.fromValue(format);
+        log.info("Начало анализа логов");
 
+        FormatType formatType = FormatType.fromValue(format);
         inputValidator.validateOutputFlag(output, formatType);
 
         LocalDateTime from = parseUtil.parseLocalDateTime(stringFrom);
         LocalDateTime to = parseUtil.parseLocalDateTime(stringTo);
-
-
         inputValidator.validateFromAndTo(from, to);
 
         TimeRangeService timeRangeService = new TimeRangeService(from, to);
 
+        log.info("Чтение файлов");
         List<AnalyzedFile> readerList = pathUtil.getAllBufferedReadersFromPaths(paths);
 
+        log.info("Анализ логов");
         StatisticsReport statisticsReport = analyzeLogs(readerList, timeRangeService);
 
+        log.info("Формирование отчета");
         Formatter formatter = getFormatter(formatType);
-
         String reportInString = formatter.format(statisticsReport);
 
+        log.info("Сохранение результата в файл: {}", output);
         FileWriterUtil.writeFile(reportInString, output);
+
+        log.info("Анализ завершен");
     }
 
     private StatisticsReport analyzeLogs(List<AnalyzedFile> analyzedFiles, TimeRangeService timeRangeService) {
@@ -74,7 +78,7 @@ public class LogAnalyzerService {
                     }
                 }
             } catch (IOException e) {
-                log.error(e.getMessage(), e);
+                log.error("Ошибка чтения файла: {}", e.getMessage());
             }
         }
 

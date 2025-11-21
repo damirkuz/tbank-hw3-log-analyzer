@@ -1,6 +1,7 @@
 package academy;
 
 import academy.log_analyzer.service.LogAnalyzerService;
+import java.util.List;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -9,8 +10,6 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import picocli.CommandLine;
-import java.util.List;
-
 
 @ExtendWith(MockitoExtension.class)
 class ApplicationTest {
@@ -33,13 +32,6 @@ class ApplicationTest {
         int exitCode = cmd.execute(args);
 
         Assertions.assertEquals(0, exitCode);
-        Mockito.verify(service).runAnalysis(
-            List.of("nginx_logs.log"),
-            "markdown",
-            "report.md",
-            null,
-            null
-        );
+        Mockito.verify(service).runAnalysis(List.of("nginx_logs.log"), "markdown", "report.md", null, null);
     }
 }
-

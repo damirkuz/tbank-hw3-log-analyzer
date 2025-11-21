@@ -1,17 +1,16 @@
 package academy.acceptance;
 
-import academy.log_analyzer.service.LogAnalyzerService;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import academy.log_analyzer.service.LogAnalyzerService;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 
 public class LogFileParsingTest {
 
@@ -40,19 +39,14 @@ public class LogFileParsingTest {
     @Test
     @DisplayName("На вход передан валидный локальный log-файл")
     void localFileProcessingTest() throws Exception {
-        String logContent = """
+        String logContent =
+                """
             93.180.71.3 - - [17/May/2015:08:05:32 +0000] "GET /downloads/product_1 HTTP/1.1" 304 0 "-" "Debian APT-HTTP/1.3"
             93.180.71.3 - - [17/May/2015:08:05:23 +0000] "GET /downloads/product_2 HTTP/1.1" 200 512 "-" "Debian APT-HTTP/1.3"
             """;
         Files.writeString(tempLogFile, logContent);
 
-        analyzerService.runAnalysis(
-            List.of(tempLogFile.toString()),
-            "markdown",
-            tempOutputFile.toString(),
-            null,
-            null
-        );
+        analyzerService.runAnalysis(List.of(tempLogFile.toString()), "markdown", tempOutputFile.toString(), null, null);
 
         assertTrue(Files.exists(tempOutputFile));
         assertTrue(Files.size(tempOutputFile) > 0);
@@ -61,24 +55,21 @@ public class LogFileParsingTest {
     @Test
     @DisplayName("На вход передан валидный удаленный log-файл")
     void remoteFileProcessingTest() throws Exception {
-        String remoteUrl = "https://raw.githubusercontent.com/elastic/examples/master/Common%20Data%20Formats/nginx_logs/nginx_logs";
+        String remoteUrl =
+                "https://raw.githubusercontent.com/elastic/examples/master/Common%20Data%20Formats/nginx_logs/nginx_logs";
 
-        analyzerService.runAnalysis(
-            List.of(remoteUrl),
-            "markdown",
-            tempOutputFile.toString(),
-            null,
-            null
-        );
+        analyzerService.runAnalysis(List.of(remoteUrl), "markdown", tempOutputFile.toString(), null, null);
 
         assertTrue(Files.exists(tempOutputFile));
         assertTrue(Files.size(tempOutputFile) > 0);
     }
 
     @Test
-    @DisplayName("На вход передан валидный локальный log-файл, часть строк в котором нужно отфильтровать по --from и --to")
+    @DisplayName(
+            "На вход передан валидный локальный log-файл, часть строк в котором нужно отфильтровать по --from и --to")
     void localFileProcessingAndFilteringTest() throws Exception {
-        String logContent = """
+        String logContent =
+                """
             93.180.71.3 - - [17/May/2015:08:05:32 +0000] "GET /downloads/product_1 HTTP/1.1" 304 0 "-" "Debian APT-HTTP/1.3"
             93.180.71.3 - - [18/May/2015:08:05:23 +0000] "GET /downloads/product_2 HTTP/1.1" 200 512 "-" "Debian APT-HTTP/1.3"
             93.180.71.3 - - [19/May/2015:08:05:23 +0000] "GET /downloads/product_3 HTTP/1.1" 200 1024 "-" "Debian APT-HTTP/1.3"
@@ -86,12 +77,11 @@ public class LogFileParsingTest {
         Files.writeString(tempLogFile, logContent);
 
         analyzerService.runAnalysis(
-            List.of(tempLogFile.toString()),
-            "markdown",
-            tempOutputFile.toString(),
-            "2015-05-18T00:00:00",
-            "2015-05-18T23:59:59"
-        );
+                List.of(tempLogFile.toString()),
+                "markdown",
+                tempOutputFile.toString(),
+                "2015-05-18T00:00:00",
+                "2015-05-18T23:59:59");
 
         assertTrue(Files.exists(tempOutputFile));
         String content = Files.readString(tempOutputFile);
@@ -101,7 +91,8 @@ public class LogFileParsingTest {
     @Test
     @DisplayName("На вход передан локальный log-файл, часть строк в котором не подходит под формат")
     void damagedLocalFileProcessingTest() throws Exception {
-        String logContent = """
+        String logContent =
+                """
             93.180.71.3 - - [17/May/2015:08:05:32 +0000] "GET /downloads/product_1 HTTP/1.1" 304 0 "-" "Debian APT-HTTP/1.3"
             This is an invalid log line
             Another invalid line without proper format
@@ -109,13 +100,7 @@ public class LogFileParsingTest {
             """;
         Files.writeString(tempLogFile, logContent);
 
-        analyzerService.runAnalysis(
-            List.of(tempLogFile.toString()),
-            "markdown",
-            tempOutputFile.toString(),
-            null,
-            null
-        );
+        analyzerService.runAnalysis(List.of(tempLogFile.toString()), "markdown", tempOutputFile.toString(), null, null);
 
         assertTrue(Files.exists(tempOutputFile));
         assertTrue(Files.size(tempOutputFile) > 0);
